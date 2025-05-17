@@ -1,6 +1,7 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import openai from '@/lib/openrouter';
-import { sanityClient } from '@/sanity/lib/client';
+import { client } from '@/sanity/lib/client'; // Changed from sanityClient to client
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
 
   // Otherwise assume it's a Sanity update request
   try {
-    const updated = await sanityClient.patch(body._id).set(body).commit();
+    const updated = await client.patch(body._id).set(body).commit(); // Using client instead of sanityClient
     return NextResponse.json(updated);
   } catch (err) {
     console.error(err);

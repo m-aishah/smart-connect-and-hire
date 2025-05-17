@@ -284,7 +284,7 @@ export default function SignUpPage() {
                 </div>
                 <Label htmlFor="seeker" className="cursor-pointer">
                   <span className="font-medium">Service Seeker</span>
-                  <p className="text-sm text-gray-500">I'm looking for services</p>
+                  <p className="text-sm text-gray-500">I&apos;m looking for services</p>
                 </Label>
               </div>
 
