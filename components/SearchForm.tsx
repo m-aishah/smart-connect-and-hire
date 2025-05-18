@@ -21,13 +21,11 @@ const placeholders = [
   "Looking for deep cleaning services in Nicosia"
 ];
 
-// Component for typing animation effect
 const TypingPlaceholder = ({ text }: { text: string }) => {
   const [displayText, setDisplayText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   
   useEffect(() => {
-    // Reset when text changes
     setDisplayText("");
     setCurrentIndex(0);
   }, [text]);
@@ -37,7 +35,7 @@ const TypingPlaceholder = ({ text }: { text: string }) => {
       const timeout = setTimeout(() => {
         setDisplayText(prev => prev + text[currentIndex]);
         setCurrentIndex(currentIndex + 1);
-      }, 50); // Speed of typing
+      }, 50);
       
       return () => clearTimeout(timeout);
     }
@@ -46,7 +44,6 @@ const TypingPlaceholder = ({ text }: { text: string }) => {
   return <>{displayText}</>
 };
 
-// Animated particles component
 const ParticleEffect = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -78,7 +75,6 @@ const ParticleEffect = () => {
   );
 };
 
-// Animated AI processing icon
 const AIProcessingIcon = () => {
   return (
     <div className="relative w-6 h-6">
@@ -124,7 +120,6 @@ const AIProcessingIcon = () => {
   );
 };
 
-// Enhanced waveform visualization for processing state
 const WaveformVisualizer = () => {
   return (
     <div className="flex items-center justify-center space-x-1 h-5">
@@ -163,7 +158,6 @@ const SearchForm = ({ query }: { query?: string }) => {
   const placeholderRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // Check if device is mobile
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640);
@@ -174,13 +168,11 @@ const SearchForm = ({ query }: { query?: string }) => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Update placeholder periodically
   useEffect(() => {
     const interval = setInterval(() => {
       setShowTyping(true);
       setPlaceholder(placeholders[Math.floor(Math.random() * placeholders.length)]);
       
-      // Hide typing effect after it's done
       const typingDuration = placeholders[0].length * 50 + 500;
       setTimeout(() => {
         setShowTyping(false);
@@ -189,24 +181,19 @@ const SearchForm = ({ query }: { query?: string }) => {
     return () => clearInterval(interval);
   }, []);
 
-  // Update input value when query prop changes
   useEffect(() => {
     setInputValue(query || "");
   }, [query]);
 
-  // Auto-adjust textarea height
   useEffect(() => {
     if (inputRef.current) {
-      // Reset height to auto to properly calculate new height
       inputRef.current.style.height = "auto";
-      // Set the new height based on scrollHeight with min/max constraints
       const newHeight = Math.max(60, Math.min(inputRef.current.scrollHeight, isMobile ? 80 : 120));
       inputRef.current.style.height = `${newHeight}px`;
       setTextareaHeight(`${newHeight}px`);
     }
   }, [inputValue, isMobile]);
 
-  // Handle form submission with smart detection
   const handleSmartSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
@@ -216,7 +203,6 @@ const SearchForm = ({ query }: { query?: string }) => {
     setRingEffect(true);
     
     try {
-      // First try conversational search
       const response = await fetch('/api/chat/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -226,22 +212,18 @@ const SearchForm = ({ query }: { query?: string }) => {
       const data = await response.json();
       
       if (response.ok && (data.urlParams || data.searchQuery)) {
-        // Conversational search worked
         if (data.urlParams) {
           router.push(`/?${data.urlParams}`);
         } else if (data.searchQuery) {
           router.push(`/?query=${encodeURIComponent(data.searchQuery)}`);
         }
       } else {
-        // Fall back to traditional search
         router.push(`/?query=${encodeURIComponent(inputValue)}`);
       }
     } catch (error) {
       console.error('Error processing search:', error);
-      // Fall back to traditional search on error
       router.push(`/?query=${encodeURIComponent(inputValue)}`);
     } finally {
-      // Delay turning off isSearching for better UX
       setTimeout(() => {
         setIsSearching(false);
         setRingEffect(false);
@@ -249,7 +231,6 @@ const SearchForm = ({ query }: { query?: string }) => {
     }
   };
 
-  // Clear search input
   const clearSearch = () => {
     setInputValue("");
     router.push('/');
@@ -285,14 +266,14 @@ const SearchForm = ({ query }: { query?: string }) => {
       <Form 
         action="/"
         onSubmit={handleSmartSearch} 
-        className="relative mx-auto w-full max-w-4xl" // Increased max width
+        className="relative mx-auto w-full max-w-4xl"
       >
         <motion.div 
           initial={{ scale: 0.95, opacity: 0, y: 20 }}
           animate={{ 
             scale: 1, 
             opacity: 1, 
-            y: [0, -5, 0], // Subtle floating animation
+            y: [0, -5, 0],
           }}
           transition={{ 
             duration: 0.5,

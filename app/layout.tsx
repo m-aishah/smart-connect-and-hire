@@ -59,7 +59,10 @@ const workSans = localFont({
 
 export const metadata: Metadata = {
   title: "Smart, Connect & Hire",
-  description:  "The hub to connect with and hire service workers in TRNC.",
+  description: "The hub to connect with and hire service workers in TRNC.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
