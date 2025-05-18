@@ -1,22 +1,63 @@
-import { SERVICES_QUERY } from "@/sanity/lib/queries";
-import { sanityFetch, SanityLive } from "@/sanity/lib/live";
-import HomeClient from "@/components/HomeClient"; // client-side component
+import { searchServices } from "@/utils/searchServices";
+import HomeClient from "@/components/HomeClient";
+import { SanityLive } from "@/sanity/lib/live";
 
 export default async function Home({
   searchParams,
 }: {
-  searchParams: { query?: string };
+  searchParams: { 
+    query?: string;
+    category?: string;
+    page?: string;
+  };
 }) {
+  // Extract search parameters
   const query = searchParams?.query ?? "";
-  const params = { search: `*${query}*` };
+  const category = searchParams?.category;
+  const page = searchParams?.page ? parseInt(searchParams.page) : 1;
+  
+  try {
+    // Fetch services using the updated search function
+    const { services, pagination } = await searchServices({
+      query,
+      category,
+      page,
+      limit: 12
+    });
 
-
-  const { data: services } = await sanityFetch({ query: SERVICES_QUERY, params });
-
-  return (
-    <>
-      <HomeClient query={query} services={services} />
-      <SanityLive />
-    </>
-  );
+    return (
+      <>
+        <HomeClient 
+          query={query} 
+          services={services} 
+          pagination={pagination}
+          searchParams={{
+            category
+          }}
+        />
+        <SanityLive />
+      </>
+    );
+  } catch (error) {
+    console.error("Error fetching services:", error);
+    // Fallback in case of error
+    return (
+      <>
+        <HomeClient 
+          query={query} 
+          services={[]} 
+          pagination={{
+            total: 0,
+            page: 1,
+            limit: 12,
+            pages: 1
+          }}
+          searchParams={{
+            category
+          }}
+        />
+        <SanityLive />
+      </>
+    );
+  }
 }

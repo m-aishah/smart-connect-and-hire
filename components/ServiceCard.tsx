@@ -1,86 +1,85 @@
-import Link from "next/link";
-import Image from "next/image";
-import { EyeIcon, Clock, Tag, ArrowRight } from "lucide-react";
+'use client';
 
-import { Author } from "@/sanity/types";
-import { cn, formatDate, formatNumber } from "@/lib/utils";
+import Image from 'next/image';
+import Link from 'next/link';
+import { Eye } from 'lucide-react';
+import { ServiceType } from './HomeClient';
+import { Skeleton } from './ui/skeleton';
+import { cn } from '@/lib/utils';
 
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+interface ServiceCardProps {
+  service: ServiceType;
+}
 
-export type ServiceCardType = {
-  image: string;
-  _id: string;
-  _createdAt: string;
-  title: string;
-  shortDescription: string;
-  description: string;
-  category: string;
-  pricing: string;
-  imageUrl: string;
-  views: number;
-  provider?: Author;
-};
-
-const ServiceCard = ({ post }: { post: ServiceCardType }) => {
+const ServiceCard = ({ service }: ServiceCardProps) => {
   return (
-    <div className="startup-card group">
-      <div className="flex justify-between ">
-        <p className="startup-card_date">
-          <Clock className="w-4 h-4" /> {formatDate(post._createdAt)}
-        </p>
-        <div className="flex items-center gap-1 text-gray-500 text-sm">
-          <EyeIcon className="w-4 h-4" /><span>{formatNumber(post.views)}</span>
-        </div>
-      </div>
-
-      <div className="flex justify-between items-center mt-4">
-        <div className="flex-1">
-          <Link href={`/user/${post.provider?._id}`}>
-            <p className="text-sm font-medium text-gray-800 line-clamp-1">
-              {post.provider?.name}
-            </p>
-          </Link>
-          <Link href={`/service/${post._id}`}>
-            <h3 className="text-lg font-semibold text-purple-700 line-clamp-1">
-              {post.title}
-            </h3>
-          </Link>
-        </div>
-        {post.provider?.image && (
+    <div className="bg-white h-full flex flex-col overflow-hidden">
+      {/* Service Image */}
+      <div className="relative h-48 w-full overflow-hidden">
+        {service.image ? (
           <Image
-            src={post.provider.image}
-            alt="provider"
-            width={40}
-            height={40}
-            className="rounded-full"
+            src={service.image}
+            alt={service.title}
+            className="object-cover"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
+        ) : (
+          <div className="absolute inset-0 bg-purple-200 flex items-center justify-center">
+            <span className="text-purple-700">No image available</span>
+          </div>
         )}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+          <div className="flex items-center">
+            <span className="px-2 py-1 text-xs font-medium bg-purple-600 text-white rounded-full">
+              {service.category}
+            </span>
+            {service.views !== undefined && (
+              <div className="ml-2 flex items-center text-white text-xs">
+                <Eye className="h-3 w-3 mr-1" />
+                <span>{service.views}</span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      <Link href={`/service/${post._id}`} className="block mt-4 relative">
-        <img
-          src={post.imageUrl || post.image}
-          alt={post.title}
-          className="startup-card_img"
-        />
-        <span className="absolute bottom-2 left-2 bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 shadow">
-          <Tag className="w-3 h-3" /> {post.category}
-        </span>
-      </Link>
-
-      <p className="startup-card_desc">{post.shortDescription}</p>
-
-      <div className="flex justify-between items-center mt-4">
-        <Link
-          href={`/?query=${post.category.toLowerCase()}`}
-          className="text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center gap-1"
-        >
-          Browse more <ArrowRight className="w-4 h-4" />
+      {/* Content */}
+      <div className="p-5 flex-grow flex flex-col">
+        <Link href={`/service/${service._id}`}>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2 hover:text-purple-600 transition-colors">
+            {service.title}
+          </h3>
+        
+          <p className="text-gray-600 text-sm mb-4 flex-grow">
+            {service.shortDescription}
+          </p>
         </Link>
-        <Button className="startup-card_btn" asChild>
-          <Link href={`/service/${post._id}`}>Details <ArrowRight className="w-4 h-4" /></Link>
-        </Button>
+
+        {/* Service Provider Details */}
+        <div className="mt-auto">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              {service.provider?.image && (
+                <div className="relative h-8 w-8 rounded-full overflow-hidden">
+                  <Image
+                    src={service.provider.image}
+                    alt={service.provider.name || 'Provider'}
+                    className="object-cover"
+                    fill
+                    sizes="32px"
+                  />
+                </div>
+              )}
+              <span className="ml-2 text-sm font-medium text-gray-700">
+                {service.provider?.name || 'Anonymous'}
+              </span>
+            </div>
+            <span className="text-sm font-bold text-purple-700">
+              {service.pricing}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

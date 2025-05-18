@@ -1,22 +1,27 @@
-"use client";
+'use client';
 
-import Link from "next/link";
 import { X } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 
 const SearchFormReset = () => {
   const reset = () => {
+    // Find parent form element and reset it
     const form = document.querySelector(".search-form") as HTMLFormElement;
-    if (form) form.reset();
+    if (form) {
+      form.reset();
+      // Also redirect to home to clear query params
+      window.location.href = '/';
+    }
   };
-
+  
   return (
-    <Button type="reset" asChild onClick={reset}>
-      <Link href="/" className="search-btn">
-        <X className="size-5 text-white" />
-      </Link>
-    </Button>
+    <button
+      type="button"
+      onClick={reset}
+      className="text-gray-400 hover:text-gray-600 focus:outline-none"
+      aria-label="Clear search"
+    >
+      <X size={18} />
+    </button>
   );
 };
 
