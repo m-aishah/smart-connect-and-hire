@@ -9,7 +9,7 @@ const ServiceClient = dynamic(() => import('@/components/ServiceClient'), {
 });
 
 export default async function ServicePage(props: { params: { id: string } }) {
-  const { id } = props.params;
+  const { id } = await props.params;
 
   const [service, playlistResult] = await Promise.all([
     client.fetch(SERVICE_BY_ID_QUERY, { id }),

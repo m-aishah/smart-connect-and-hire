@@ -1,60 +1,60 @@
-import Image from "next/image";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import { getSession } from "@/lib/actions/auth";
-
 import { client } from "@/sanity/lib/client";
 import { AUTHOR_BY_ID_QUERY } from "@/sanity/lib/queries";
 
-import UserStartups from "@/components/UserStartups";
 import { ServiceCardSkeleton } from "@/components/ServiceCard";
+import ProfileComponent from "@/components/ProfileComponent";
+import UserServices from "@/components/UserServices";
 
-export const experimental_ppr = true;
+export const dynamic = "force-dynamic";
 
-async function Page({ params }: { params: Promise<{ id: string }> }) {
+async function getAvailability(userId: string) {
+  return await client.fetch(
+    `*[_type == "availability" && provider._ref == $userId]{
+      _id,
+      dayOfWeek,
+      startTime,
+      endTime,
+      isAvailable,
+      recurringWeekly,
+      specificDate
+    }`,
+    { userId }
+  );
+}
+
+async function Page({ params }: { params: { id: string } }) {
   const id = (await params).id;
   const session = await getSession();
 
-  const user = await client.fetch(AUTHOR_BY_ID_QUERY, { id: id });
+  const user = await client.fetch(AUTHOR_BY_ID_QUERY, { id });
   if (!user) return notFound();
 
+  // Fetch availability data
+  const availability = await getAvailability(id);
+
+  const isOwnProfile = session?.id === id;
+  const isServiceProvider = user.userType === "provider";
+
   return (
-    <>
-      <section className="profile_container">
-        <div className="profile_card">
-          <div className="profile_title">
-            <h3 className="text-24-black uppercase text-center line-clamp-1">
-              {user.name}
-            </h3>
-          </div>
-
-          <Image
-            src={user.image}
-            alt="user_image"
-            width={220}
-            height={220}
-            className="profile_image"
-          />
-
-          <p className="text-30-extrabold mt-7 text-center">
-            @{user?.username}
-          </p>
-          <p className="mt-1 text-center text-14-normal">{user?.bio}</p>
-        </div>
-
-        <div className="flex-1 flex flex-col gap-5 lg:-mt-5">
-          <p className="text-30-bold">
-            {session?.id === id ? "Your" : "All"} Services
-          </p>
-          <ul className="card_grid-sm">
-            <Suspense fallback={<ServiceCardSkeleton />}>
-              <UserStartups id={id} />
-            </Suspense>
-          </ul>
-        </div>
-      </section>
-    </>
+    <ProfileComponent 
+      user={user}
+      isOwnProfile={isOwnProfile}
+      isServiceProvider={isServiceProvider}
+      userId={id}
+      availability={availability}
+    >
+      {isServiceProvider && (
+        <Suspense fallback={<ServiceCardSkeleton count={3} />}>
+          {/* @ts-ignore */}
+          {/* UserServices is a server component that will be passed as children */}
+          <UserServices id={id} />
+        </Suspense>
+      )}
+    </ProfileComponent>
   );
 }
 

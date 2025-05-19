@@ -75,7 +75,7 @@ export const service = defineType({
     select: {
       title: "title",
       subtitle: "shortDescription",
-      media: "imageUrl",
+      media: "image",
     },
   },
 });

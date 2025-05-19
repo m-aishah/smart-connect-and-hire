@@ -1,14 +1,15 @@
 import { type SchemaTypeDefinition } from "sanity";
 
-import { startup } from "@/sanity/schemaTypes/startup";
-import { author } from "@/sanity/schemaTypes/author";
-import { playlist } from "@/sanity/schemaTypes/playlist";
-import { service } from "@/sanity/schemaTypes/service";
-
+import { author } from "./author";
+import { playlist } from "./playlist";
+import { service } from "./service";
+import { availability } from "./availability";
+import { booking } from "./booking";
 // ✅ Export an array directly, not an object
 export const schemaTypes: SchemaTypeDefinition[] = [
   author,
-  startup,
   playlist,
   service,
+  availability,
+  booking,
 ];

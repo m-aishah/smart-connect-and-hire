@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { User, Calendar, Tag, DollarSign, ChevronRight } from "lucide-react";
 import markdownit from "markdown-it";
-
+import { ServiceCardType } from "@/components/ServiceCard";
 import { formatDate } from "@/lib/utils";
 import View from "@/components/View";
 import ServiceCard from "@/components/ServiceCard";
@@ -20,15 +20,7 @@ export interface ServiceProviderType {
   image?: string;
 }
 
-export interface RelatedServiceType {
-  _id?: string;
-  title?: string;
-  image?: string;
-  category?: string;
-  pricing?: string;
-  shortDescription?: string;
-  provider?: ServiceProviderType;
-}
+export interface RelatedServiceType extends ServiceCardType {}
 
 interface ServiceType {
   _id: string;
@@ -38,7 +30,6 @@ interface ServiceType {
   image?: string;
   category?: string;
   pricing?: string;
-  createdAt?: string;
   _createdAt?: string;
   provider?: ServiceProviderType;
 }
@@ -127,7 +118,7 @@ export default function ServiceClient({ service, relatedServices, id }: ServiceC
 
                 <span className="px-3 py-1 bg-orange-200 text-grey-700 rounded-full text-sm font-medium flex items-center gap-1">
                   <Calendar size={14} />
-                  {formatDate(service?.createdAt || service?._createdAt || new Date().toISOString())}
+                  {formatDate(service?._createdAt || new Date().toISOString())}
                 </span>
               </div>
 

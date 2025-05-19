@@ -12,9 +12,9 @@ export default async function Home({
   };
 }) {
   // Extract search parameters
-  const query = searchParams?.query ?? "";
-  const category = searchParams?.category;
-  const page = searchParams?.page ? parseInt(searchParams.page) : 1;
+  const query = (await searchParams)?.query ?? "";
+  const category = (await searchParams)?.category;
+  const page = parseInt((await searchParams)?.page ?? "1");
   
   try {
     // Fetch services using the updated search function

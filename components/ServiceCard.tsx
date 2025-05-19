@@ -1,94 +1,113 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { Eye } from 'lucide-react';
-import { ServiceType } from './HomeClient';
-import { Skeleton } from './ui/skeleton';
-import { cn } from '@/lib/utils';
+import Image from 'next/image';
+import { EyeIcon, Clock, Tag, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn, formatDate, formatNumber } from '@/lib/utils';
 
-interface ServiceCardProps {
-  service: ServiceType;
-}
+import { Author } from '@/sanity/types';
 
-const ServiceCard = ({ service }: ServiceCardProps) => {
+export type ServiceCardType = {
+  image: string;
+  imageUrl: string;
+  _id: string;
+  _createdAt: string;
+  title: string;
+  shortDescription: string;
+  description: string;
+  category: string;
+  pricing: string;
+  views: number;
+  provider?: Author;
+};
+
+const ServiceCard = ({ post }: { post: ServiceCardType }) => {
   return (
-    <div className="bg-white h-full flex flex-col overflow-hidden">
-      {/* Service Image */}
-      <div className="relative h-48 w-full overflow-hidden">
-        {service.image ? (
-          <Image
-            src={service.image}
-            alt={service.title}
-            className="object-cover"
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-purple-200 flex items-center justify-center">
-            <span className="text-purple-700">No image available</span>
-          </div>
-        )}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-          <div className="flex items-center">
-            <span className="px-2 py-1 text-xs font-medium bg-purple-600 text-white rounded-full">
-              {service.category}
-            </span>
-            {service.views !== undefined && (
-              <div className="ml-2 flex items-center text-white text-xs">
-                <Eye className="h-3 w-3 mr-1" />
-                <span>{service.views}</span>
-              </div>
-            )}
-          </div>
-        </div>
+    <div className="startup-card group bg-white rounded-2xl shadow hover:shadow-md transition">
+      {/* Header with Date & Views */}
+      <div className="flex justify-between items-center px-4 pt-4 text-sm text-gray-500">
+        <p className="flex items-center gap-1">
+          <Clock className="w-4 h-4" />
+          {formatDate(post._createdAt)}
+        </p>
+        <p className="flex items-center gap-1">
+          <EyeIcon className="w-4 h-4" />
+          {formatNumber(post.views)}
+        </p>
       </div>
 
-      {/* Content */}
-      <div className="p-5 flex-grow flex flex-col">
-        <Link href={`/service/${service._id}`}>
-          <h3 className="text-xl font-semibold text-gray-800 mb-2 hover:text-purple-600 transition-colors">
-            {service.title}
-          </h3>
-        
-          <p className="text-gray-600 text-sm mb-4 flex-grow">
-            {service.shortDescription}
-          </p>
-        </Link>
-
-        {/* Service Provider Details */}
-        <div className="mt-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              {service.provider?.image && (
-                <div className="relative h-8 w-8 rounded-full overflow-hidden">
-                  <Image
-                    src={service.provider.image}
-                    alt={service.provider.name || 'Provider'}
-                    className="object-cover"
-                    fill
-                    sizes="32px"
-                  />
-                </div>
-              )}
-              <span className="ml-2 text-sm font-medium text-gray-700">
-                {service.provider?.name || 'Anonymous'}
-              </span>
-            </div>
-            <span className="text-sm font-bold text-purple-700">
-              {service.pricing}
-            </span>
-          </div>
+      {/* Provider + Title */}
+      <div className="flex justify-between items-center px-4 mt-2">
+        <div className="flex-1">
+          {post.provider && (
+            <Link href={`/user/${post.provider._id}`}>
+              <p className="text-sm font-medium text-gray-800 line-clamp-1 hover:underline">
+                {post.provider.name}
+              </p>
+            </Link>
+          )}
+          <Link href={`/service/${post._id}`}>
+            <h3 className="text-lg font-semibold text-purple-700 line-clamp-1 hover:underline">
+              {post.title}
+            </h3>
+          </Link>
         </div>
+        {post.provider?.image && (
+          <Image
+            src={post.provider.image}
+            alt="provider"
+            width={40}
+            height={40}
+            className="rounded-full ml-2"
+          />
+        )}
+      </div>
+
+      {/* Image with Tag */}
+      <Link href={`/service/${post._id}`} className="block relative mt-4">
+        <Image
+          src={post.imageUrl || post.image || post.image}
+          alt={post.title}
+          width={500}
+          height={300}
+          className="w-full h-48 object-cover rounded-t-xl"
+        />
+        <span className="absolute bottom-2 left-2 bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 shadow">
+          <Tag className="w-3 h-3" /> {post.category}
+        </span>
+      </Link>
+
+      {/* Short Description */}
+      <p className="startup-card_desc px-4 mt-2 text-gray-600 text-sm line-clamp-2">
+        {post.shortDescription}
+      </p>
+
+      {/* Bottom Actions */}
+      <div className="flex justify-between items-center mt-4 px-4 pb-4">
+        <Link
+          href={`/?query=${post.category.toLowerCase()}`}
+          className="text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center gap-1"
+        >
+          Browse more <ArrowRight className="w-4 h-4" />
+        </Link>
+        <Button className="startup-card_btn" asChild>
+          <Link href={`/service/${post._id}`}>Details <ArrowRight className="w-4 h-4" /></Link>
+        </Button>
       </div>
     </div>
   );
 };
 
-export const ServiceCardSkeleton = () => (
+
+interface ServiceCardSkeletonProps {
+  count?: number;
+}
+export const ServiceCardSkeleton = ({count = 1}) => (
   <>
     {[0, 1, 2, 3, 4].map((_, index: number) => (
-      <li key={cn("skeleton", index)}>
+      <li key={cn('skeleton', index)}>
         <Skeleton className="startup-card_skeleton" />
       </li>
     ))}

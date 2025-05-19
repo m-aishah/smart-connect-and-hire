@@ -6,23 +6,11 @@ import { motion } from 'framer-motion';
 import ServiceCard from '@/components/ServiceCard';
 import SearchForm from '@/components/SearchForm';
 import CategoryFilter from '@/components/CategoryFilter';
+import { ServiceCardType } from '@/components/ServiceCard';
 
 // Define types according to your schema
-export interface ServiceType {
-  _id: string;
-  _createdAt: string;
-  title: string;
-  shortDescription: string;
-  category: string;
-  pricing: string;
-  image: string;
-  provider: {
-    _id: string;
-    name: string;
-    image: string;
-  };
-  views?: number;
-}
+export interface ServiceType extends ServiceCardType {}
+
 
 interface PaginationType {
   total: number;
@@ -131,7 +119,7 @@ export default function HomeClient({
                   transition={{ delay: index * 0.05 }}
                   className="rounded-3xl overflow-hidden border border-purple-200 shadow-sm hover:shadow-lg transition-shadow duration-300"
                 >
-                  <ServiceCard service={service} />
+                  <ServiceCard post={service} />
                 </motion.li>
               ))}
             </ul>

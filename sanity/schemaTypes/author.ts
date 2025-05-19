@@ -47,6 +47,34 @@ export const author = defineType({
       type: "datetime",
       hidden: true,
     }),
+    defineField({
+      name: "availabilitySettings",
+      title: "Availability Settings",
+      type: "object",
+      fields: [
+        defineField({
+          name: "bookingNotice",
+          title: "Booking Notice (hours)",
+          type: "number",
+          initialValue: 24,
+          validation: (Rule) => Rule.required().min(0),
+        }),
+        defineField({
+          name: "appointmentDuration",
+          title: "Appointment Duration (minutes)",
+          type: "number",
+          initialValue: 60,
+          validation: (Rule) => Rule.required().min(15),
+        }),
+        defineField({
+          name: "breakBetweenAppointments",
+          title: "Break Between Appointments (minutes)",
+          type: "number",
+          initialValue: 15,
+          validation: (Rule) => Rule.required().min(0),
+        }),
+  ],
+}),
   ],
   preview: {
     select: {

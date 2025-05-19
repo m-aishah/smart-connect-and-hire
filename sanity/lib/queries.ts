@@ -37,16 +37,25 @@ export const SERVICE_BY_ID_QUERY = defineQuery(`*[_type == "service" && _id == $
   }
 }`);
 
-export const SERVICES_BY_PROVIDER_QUERY = defineQuery(`*[_type == "service" && provider._ref == $providerId] 
-  | order(_createdAt desc) {
-    _id,
-    _createdAt,
-    title,
-    shortDescription,
-    category,
-    pricing,
-    "image": image.asset->url,
-  }`);
+export const SERVICES_BY_PROVIDER_QUERY = defineQuery(`*[_type == "service" && provider._ref == $id] | order(createdAt desc){
+  _id,
+  title,
+  "slug": slug.current,
+  shortDescription,
+  description,
+  category,
+  pricing,
+  "image": image.asset->url,
+  _createdAt,
+  views,
+ "provider": provider->{
+      _id,
+      name,
+      "image": image.asset->url,
+    }
+}`);
+
+
 
 
 export const STARTUPS_QUERY =
@@ -93,12 +102,12 @@ export const STARTUP_BY_ID_QUERY =
 export const AUTHOR_BY_ID_QUERY =
   defineQuery(`*[_type == "author" && _id == $id][0]{
   _id,
-  id,
   name,
   username,
   email,
   image,
-  bio
+  bio,
+  userType
 }`);
 
 export const AUTHOR_BY_GITHUB_ID_QUERY =
@@ -166,4 +175,88 @@ export const SERVICE_VIEWS_QUERY =
   defineQuery(`*[_type == "service" && _id == $id][0]{
   _id,
   views
+}`);
+
+
+export const BOOKINGS_BY_SEEKER_QUERY = defineQuery(`*[_type == "booking" && seeker._ref == $id] | order(bookingDate desc, startTime asc) {
+  _id,
+  bookingDate,
+  startTime,
+  endTime,
+  status,
+  notes,
+  _createdAt,
+  "service": service->{
+    _id,
+    title,
+    "image": image.asset->url,
+    pricing
+  },
+  "provider": provider->{
+    _id,
+    name,
+    "image": image.asset->url,
+    username
+  }
+}`);
+
+export const BOOKINGS_BY_PROVIDER_QUERY = defineQuery(`*[_type == "booking" && provider._ref == $id] | order(bookingDate desc, startTime asc) {
+  _id,
+  bookingDate,
+  startTime,
+  endTime,
+  status,
+  notes,
+  _createdAt,
+  "service": service->{
+    _id,
+    title,
+    "image": image.asset->url,
+    pricing
+  },
+  "seeker": seeker->{
+    _id,
+    name,
+    "image": image.asset->url,
+    username,
+    email
+  }
+}`);
+
+export const BOOKING_BY_ID_QUERY = defineQuery(`*[_type == "booking" && _id == $id][0] {
+  _id,
+  bookingDate,
+  startTime,
+  endTime,
+  status,
+  notes,
+  _createdAt,
+  "service": service->{
+    _id,
+    title,
+    "image": image.asset->url,
+    pricing,
+    description
+  },
+  "provider": provider->{
+    _id,
+    name,
+    "image": image.asset->url,
+    username,
+    email
+  },
+  "seeker": seeker->{
+    _id,
+    name,
+    "image": image.asset->url,
+    username,
+    email
+  }
+}`);
+
+// Get bookings for checking availability
+export const PROVIDER_BOOKINGS_BY_DATE_QUERY = defineQuery(`*[_type == "booking" && provider._ref == $providerId && bookingDate == $date && status != "cancelled"] {
+  _id,
+  startTime,
+  endTime
 }`);
