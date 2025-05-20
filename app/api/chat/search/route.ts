@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import openai from '@/lib/openrouter'; // Using your existing OpenAI client
+import openai from '@/lib/openrouter';
 
 export async function POST(req: NextRequest) {
   const { query } = await req.json();
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   try {
     // Use the OpenAI API to analyze the conversational query
     const completion = await openai.chat.completions.create({
-      model: 'openai/gpt-3.5-turbo', // Using your configured model
+      model: 'openai/gpt-3.5-turbo', 
       messages: [
         {
           role: 'system',
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
     // Parse the structured response
     const aiResponse = completion.choices[0].message.content?.trim();
-    
+    console.log('AI Response:', aiResponse);
     try {
       // Parse the JSON response
       const parsedResponse = JSON.parse(aiResponse || '{}');

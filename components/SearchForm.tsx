@@ -239,9 +239,9 @@ const SearchForm = ({ query }: { query?: string }) => {
     }
   };
 
-  // Handle microphone click (placeholder for voice search)
+
   const handleMicClick = () => {
-    // This is just a placeholder - will be implemented later
+    // TODO: This is just a placeholder - will be implemented later
     setRingEffect(true);
     setTimeout(() => setRingEffect(false), 1000);
   };

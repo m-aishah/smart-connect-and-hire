@@ -21,7 +21,7 @@ export const service = defineType({
     defineField({
       name: "description",
       title: "Detailed Description",
-      type: "markdown", // This requires the markdown plugin to be installed
+      type: "markdown", 
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -57,7 +57,7 @@ export const service = defineType({
       name: "provider",
       title: "Provider",
       type: "reference",
-      to: [{ type: "author" }], // Assuming "author" is your user schema
+      to: [{ type: "author" }],
       validation: (Rule) => Rule.required(),
     }),
     defineField({
