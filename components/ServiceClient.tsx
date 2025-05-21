@@ -1,15 +1,23 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { User, Calendar, Tag, DollarSign, ChevronRight } from "lucide-react";
+import {
+  User,
+  Calendar,
+  Tag,
+  DollarSign,
+  ChevronRight,
+  Clock,
+} from "lucide-react";
 import markdownit from "markdown-it";
 import { ServiceCardType } from "@/components/ServiceCard";
 import { formatDate } from "@/lib/utils";
 import View from "@/components/View";
 import ServiceCard from "@/components/ServiceCard";
+import BookingModal from "@/components/BookingModal";
 
 const md = markdownit();
 
@@ -40,17 +48,21 @@ interface ServiceClientProps {
   id: string;
 }
 
-export default function ServiceClient({ service, relatedServices, id }: ServiceClientProps) {
-
+export default function ServiceClient({
+  service,
+  relatedServices,
+  id,
+}: ServiceClientProps) {
   const [parsedContent, setParsedContent] = useState<string>("");
-  
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
   useEffect(() => {
     if (service?.description) {
       setParsedContent(md.render(service.description));
     }
   }, [service?.description]);
 
-  const categoryLabels: {[key: string]: string} = {
+  const categoryLabels: { [key: string]: string } = {
     design: "Design & Creative",
     development: "Development & IT",
     marketing: "Marketing",
@@ -59,10 +71,10 @@ export default function ServiceClient({ service, relatedServices, id }: ServiceC
     other: "Other",
   };
 
-  const categoryLabel = service?.category ? 
-    (categoryLabels[service.category] || service.category) : 
-    "Uncategorized";
-  
+  const categoryLabel = service?.category
+    ? categoryLabels[service.category] || service.category
+    : "Uncategorized";
+
   return (
     <>
       {/* Hero Section */}
@@ -70,7 +82,7 @@ export default function ServiceClient({ service, relatedServices, id }: ServiceC
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           className="rounded-3xl bg-purple-100/70 shadow-xl border border-purple-200 px-8 py-12 max-w-6xl mx-auto"
         >
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
@@ -96,7 +108,9 @@ export default function ServiceClient({ service, relatedServices, id }: ServiceC
                   transition={{ duration: 0.5, delay: 0.2 }}
                   className="w-full rounded-2xl bg-purple-200/50 border border-purple-300 aspect-video flex items-center justify-center shadow-lg"
                 >
-                  <p className="text-purple-500 font-medium">No image available</p>
+                  <p className="text-purple-500 font-medium">
+                    No image available
+                  </p>
                 </motion.div>
               )}
             </div>
@@ -108,7 +122,7 @@ export default function ServiceClient({ service, relatedServices, id }: ServiceC
                   <Tag size={14} />
                   {categoryLabel}
                 </span>
-                
+
                 {service?.pricing && (
                   <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium flex items-center gap-1">
                     <DollarSign size={14} />
@@ -125,10 +139,19 @@ export default function ServiceClient({ service, relatedServices, id }: ServiceC
               <h1 className="text-3xl md:text-4xl font-bold text-purple-900 mb-3">
                 {service?.title || "Service Details"}
               </h1>
-              
+
               <p className="text-lg text-grey-700 mb-6">
                 {service?.shortDescription || "No description available"}
               </p>
+
+              {/* Book Service Button */}
+              <button
+                onClick={() => setIsBookingModalOpen(true)}
+                className="mb-6 w-full md:w-auto py-3 px-8 rounded-lg bg-purple-600 text-white font-medium hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
+              >
+                <Clock size={18} />
+                Book This Service
+              </button>
 
               {service?.provider && (
                 <Link
@@ -170,11 +193,13 @@ export default function ServiceClient({ service, relatedServices, id }: ServiceC
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           className="rounded-3xl bg-purple-100/70 shadow-xl border border-purple-200 px-6 py-10 max-w-6xl mx-auto"
         >
-          <h2 className="text-2xl font-bold text-purple-900 mb-6 px-4">Service Details</h2>
-          
+          <h2 className="text-2xl font-bold text-purple-900 mb-6 px-4">
+            Service Details
+          </h2>
+
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-purple-200">
             {parsedContent ? (
               <article
@@ -182,7 +207,9 @@ export default function ServiceClient({ service, relatedServices, id }: ServiceC
                 dangerouslySetInnerHTML={{ __html: parsedContent }}
               />
             ) : (
-              <p className="text-center text-gray-500 py-12 text-lg">No details provided</p>
+              <p className="text-center text-gray-500 py-12 text-lg">
+                No details provided
+              </p>
             )}
           </div>
 
@@ -197,10 +224,12 @@ export default function ServiceClient({ service, relatedServices, id }: ServiceC
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
+            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
             className="rounded-3xl bg-purple-100/70 shadow-xl border border-purple-200 px-6 py-10 max-w-6xl mx-auto"
           >
-            <h2 className="text-2xl font-bold text-purple-900 mb-6 text-center">Similar Services</h2>
+            <h2 className="text-2xl font-bold text-purple-900 mb-6 text-center">
+              Similar Services
+            </h2>
 
             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {relatedServices.map((service, index) => (
@@ -218,6 +247,16 @@ export default function ServiceClient({ service, relatedServices, id }: ServiceC
           </motion.div>
         </section>
       )}
+
+      {/* Booking Modal */}
+      <BookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        serviceId={service?._id || ""}
+        serviceName={service?.title || ""}
+        providerId={service?.provider?._id || ""}
+        providerName={service?.provider?.name || ""}
+      />
     </>
   );
 }

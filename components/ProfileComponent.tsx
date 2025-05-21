@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -33,25 +32,61 @@ interface Availability {
   specificDate?: string;
 }
 
+interface Booking {
+  _id: string;
+  bookingDate: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+  seeker: {
+    _id: string;
+    name: string;
+  };
+  service: {
+    _id: string;
+    title: string;
+  };
+  provider: {
+    _id: string;
+    name: string;
+  };
+}
+
 interface ProfileComponentProps {
   user: User;
   isOwnProfile: boolean;
   isServiceProvider: boolean;
   userId: string;
   availability?: Availability[];
+  bookings?: Booking[];
   children?: ReactNode;
 }
 
-const ProfileComponent = ({ 
-  user, 
-  isOwnProfile, 
-  isServiceProvider, 
+const ProfileComponent = ({
+  user,
+  isOwnProfile,
+  isServiceProvider,
   userId,
   availability = [],
-  children 
+  bookings = [],
+  children,
 }: ProfileComponentProps) => {
-  const [activeTab, setActiveTab] = useState('services');
-  
+  const [activeTab, setActiveTab] = useState("services");
+
+  // Handler for booking a new slot
+  const handleBookSlot = async (bookingData: any) => {
+    // This would typically make an API call to create a booking
+    console.log("Booking slot:", bookingData);
+    // Implement booking logic here
+  };
+
+  // Handler for updating an existing booking
+  const handleUpdateBooking = async (bookingId: string, updateData: any) => {
+    // This would typically make an API call to update a booking
+    console.log("Updating booking:", bookingId, updateData);
+    // Implement update logic here
+  };
+
   return (
     <section className="bg-purple-50 py-16 px-4 md:px-10">
       <motion.div
@@ -68,7 +103,6 @@ const ProfileComponent = ({
             transition={{ duration: 0.5, delay: 0.2 }}
             className="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center border border-purple-200"
           >
-            
             <div className="relative w-48 h-48 mb-4">
               <Image
                 src={user.image || "/placeholder-profile.png"}
@@ -83,23 +117,23 @@ const ProfileComponent = ({
             <p className="text-xl font-bold text-purple-700 mb-4">
               @{user.username || user.name.toLowerCase().replace(/\s+/g, "_")}
             </p>
-            
+
             <div className="bg-purple-50 rounded-xl p-4 w-full mb-4">
-              <p className="text-gray-700">
-                {user.bio || "No bio available"}
-              </p>
+              <p className="text-gray-700">{user.bio || "No bio available"}</p>
             </div>
-            
+
             <div className="grid grid-cols-1 gap-2 w-full">
               <div className="flex items-center gap-2 text-sm text-purple-900">
-                <span className="font-semibold">User Type:</span> 
+                <span className="font-semibold">User Type:</span>
                 <span className="px-3 py-1 bg-purple-100 rounded-full text-purple-800">
-                  {user.userType === "provider" ? "Service Provider" : "Service Seeker"}
+                  {user.userType === "provider"
+                    ? "Service Provider"
+                    : "Service Seeker"}
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-2 text-sm">
-                <span className="font-semibold">Email:</span> 
+                <span className="font-semibold">Email:</span>
                 <span className="text-purple-700">{user.email}</span>
               </div>
             </div>
@@ -121,22 +155,22 @@ const ProfileComponent = ({
             {/* Tabs */}
             {isServiceProvider && (
               <div className="flex border-b border-purple-200">
-                <button 
-                  onClick={() => setActiveTab('services')}
+                <button
+                  onClick={() => setActiveTab("services")}
                   className={`px-6 py-3 font-medium text-sm transition-colors ${
-                    activeTab === 'services' 
-                      ? 'border-b-2 border-purple-700 text-purple-800' 
-                      : 'text-gray-600 hover:text-purple-700'
+                    activeTab === "services"
+                      ? "border-b-2 border-purple-700 text-purple-800"
+                      : "text-gray-600 hover:text-purple-700"
                   }`}
                 >
                   Services
                 </button>
-                <button 
-                  onClick={() => setActiveTab('availability')}
+                <button
+                  onClick={() => setActiveTab("availability")}
                   className={`px-6 py-3 font-medium text-sm transition-colors ${
-                    activeTab === 'availability' 
-                      ? 'border-b-2 border-purple-700 text-purple-800' 
-                      : 'text-gray-600 hover:text-purple-700'
+                    activeTab === "availability"
+                      ? "border-b-2 border-purple-700 text-purple-800"
+                      : "text-gray-600 hover:text-purple-700"
                   }`}
                 >
                   Availability Calendar
@@ -145,16 +179,16 @@ const ProfileComponent = ({
             )}
 
             {/* Services Tab */}
-            {(activeTab === 'services' || !isServiceProvider) && (
+            {(activeTab === "services" || !isServiceProvider) && (
               <>
                 <div className="flex justify-between items-center rounded-xl p-4 border border-purple-200 shadow-sm">
                   <h2 className="text-2xl font-bold text-purple-900">
                     {isOwnProfile ? "Your" : `${user.name}'s`} Services
                   </h2>
-                  
+
                   {isOwnProfile && isServiceProvider && (
-                    <Link 
-                      href="/service/create" 
+                    <Link
+                      href="/service/create"
                       className="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white font-medium rounded-xl transition-colors"
                     >
                       Add New Service
@@ -170,12 +204,24 @@ const ProfileComponent = ({
                   <div className="bg-white p-10 rounded-xl text-center border border-purple-200 shadow-sm">
                     <div className="flex flex-col items-center gap-4">
                       <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-purple-700">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-8 h-8 text-purple-700"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                          />
                         </svg>
                       </div>
                       <p className="text-lg font-medium text-purple-900">
-                        This user is a service seeker and does not provide any services.
+                        This user is a service seeker and does not provide any
+                        services.
                       </p>
                     </div>
                   </div>
@@ -184,15 +230,15 @@ const ProfileComponent = ({
             )}
 
             {/* Availability Tab */}
-            {activeTab === 'availability' && isServiceProvider && (
+            {activeTab === "availability" && isServiceProvider && (
               <>
                 <div className="flex justify-between items-center rounded-xl p-4 border border-purple-200 shadow-sm">
                   <h2 className="text-2xl font-bold text-purple-900">
                     {isOwnProfile ? "Your" : `${user.name}'s`} Availability
                   </h2>
-                  
+
                   {isOwnProfile && (
-                    <Link 
+                    <Link
                       href={`/user/${userId}/availability/manage`}
                       className="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white font-medium rounded-xl transition-colors"
                     >
@@ -202,12 +248,16 @@ const ProfileComponent = ({
                 </div>
 
                 <div className="bg-white rounded-xl p-6 border border-purple-200 shadow-sm">
-                  <AvailabilityCalendar 
-                    availability={availability} 
-                    isOwnProfile={isOwnProfile} 
+                  <AvailabilityCalendar
+                    availability={availability}
+                    bookings={bookings}
+                    isOwnProfile={isOwnProfile}
+                    isProvider={user.userType === "provider"}
                     userId={userId}
                     username={user.name}
                     availabilitySettings={user.availabilitySettings}
+                    onBookSlot={handleBookSlot}
+                    onUpdateBooking={handleUpdateBooking}
                   />
                 </div>
               </>
